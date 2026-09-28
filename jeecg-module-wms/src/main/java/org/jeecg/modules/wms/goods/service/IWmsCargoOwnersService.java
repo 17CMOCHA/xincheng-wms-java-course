@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 /**
  * @Description: 货主表
  * @Author: jeecg-boot
- * @Date:   2026-09-04
+ * @Date:   2026-08-29
  * @Version: V1.0
  */
 public interface IWmsCargoOwnersService extends IService<WmsCargoOwners> {

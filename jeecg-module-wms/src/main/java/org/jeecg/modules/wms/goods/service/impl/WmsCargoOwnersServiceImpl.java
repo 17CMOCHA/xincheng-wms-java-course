@@ -1,5 +1,6 @@
 package org.jeecg.modules.wms.goods.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.modules.wms.goods.entity.WmsCargoOwners;
@@ -8,13 +9,10 @@ import org.jeecg.modules.wms.goods.service.IWmsCargoOwnersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.transaction.annotation.Transactional;
-
 /**
  * @Description: 货主表
  * @Author: jeecg-boot
- * @Date:   2026-09-04
+ * @Date:   2026-08-29
  * @Version: V1.0
  */
 @Service
@@ -23,19 +21,23 @@ public class WmsCargoOwnersServiceImpl extends ServiceImpl<WmsCargoOwnersMapper,
     private RedisUtil redisUtil;
     @Autowired
     private WmsCargoOwnersMapper wmsCargoOwnersMapper;
-
+    // Redis中存储自增序号的key（自定义，确保唯一，建议按"模块_功能_编码"命名）
     private static final String REDIS_INCR_KEY = "WMS_CARGO_OWNERS_CODE";
-    @Override
-    @Transactional
-    public void add(WmsCargoOwners cargoOwners) {
-        String ownerCode = generateOwnerCode();
 
+    /**
+     * 新增货主核心实现
+     * 加@Transactional：确保编码生成和数据保存要么一起成功，要么一起失败
+     */
+    @Override
+    public void add(WmsCargoOwners cargoOwners) {
+        // 1. 生成货主编码（调用下面的工具方法）
+        String ownerCode = generateOwnerCode();
         // 2. 给实体设置编码
         cargoOwners.setOwnerCode(ownerCode);
         // 3. 保存到数据库（MyBatis-Plus的ServiceImpl自带save方法）
         this.save(cargoOwners);
-
     }
+
     private String generateOwnerCode() {
         try {
             while (true) {
